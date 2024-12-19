@@ -8,6 +8,7 @@ settings.gradle.kts
 .editorconfig
 buildSrc
 .kotlin
+build
 ### IntelliJ IDEA ###
 .idea
 .idea/modules.xml

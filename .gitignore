@@ -7,7 +7,8 @@ build.properties.json
 gradle.properties
 settings.gradle.kts
 .editorconfig
-
+buildSrc
+.kotlin
 ### IntelliJ IDEA ###
 .idea
 .idea/modules.xml

@@ -7,6 +7,7 @@ import org.http4k.core.Request
 import org.http4k.core.Response
 import org.http4k.core.Status
 import org.http4k.lens.contentType
+import ru.yarsu.models.Template
 import ru.yarsu.storages.TemplateStorage
 
 class AllTemplateHandler(
@@ -16,7 +17,7 @@ class AllTemplateHandler(
         val mapper = jacksonObjectMapper()
         val arrayNode = mapper.createArrayNode()
 
-        for (i in templateStorage.getList()) {
+        for (i in templateStorage.getList().sortedWith(compareBy(Template::id))) {
             val node = mapper.createObjectNode()
             node.put("Id", i.id.toString())
             node.put("SideA", i.sideA)
@@ -25,6 +26,8 @@ class AllTemplateHandler(
             arrayNode.add(node)
         }
 
-        return Response(Status.OK).contentType(ContentType.APPLICATION_JSON).body(mapper.writeValueAsString(arrayNode))
+        return Response(Status.OK)
+            .contentType(ContentType.APPLICATION_JSON)
+            .body(mapper.writeValueAsString(arrayNode))
     }
 }

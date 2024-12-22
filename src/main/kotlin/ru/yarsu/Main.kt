@@ -182,7 +182,7 @@ fun createRoutes(
         "templates/{template-id}/triangle" bind Method.POST to createTriangleByTemplateHandler,
         "users" bind Method.GET to allUsersHandler,
         "users/" bind Method.POST to addUserHandler,
-        "users/{{user-id}}" bind Method.DELETE to deleteUserHandler,
+        "users/{user-id}" bind Method.DELETE to deleteUserHandler,
     )
 }
 

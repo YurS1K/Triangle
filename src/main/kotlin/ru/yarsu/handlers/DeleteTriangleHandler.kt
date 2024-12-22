@@ -19,6 +19,7 @@ class DeleteTriangleHandler(
 ) : HttpHandler {
     override fun invoke(request: Request): Response {
         val triangleIDString = request.path("triangle-id").orEmpty()
+
         if (triangleIDString.isEmpty()) {
             return Response(Status.BAD_REQUEST)
                 .contentType(ContentType.APPLICATION_JSON)
@@ -28,6 +29,7 @@ class DeleteTriangleHandler(
                     ),
                 )
         }
+
         try {
             UUID.fromString(triangleIDString)
         } catch (e: IllegalArgumentException) {
@@ -35,6 +37,7 @@ class DeleteTriangleHandler(
                 .contentType(ContentType.APPLICATION_JSON)
                 .body(createError("Некорректное значение переданного параметра id. Ожидается UUID, но получено текстовое значение"))
         }
+
         val triangle = triangleStorage.getByID(UUID.fromString(triangleIDString))
 
         if (triangle != null) {

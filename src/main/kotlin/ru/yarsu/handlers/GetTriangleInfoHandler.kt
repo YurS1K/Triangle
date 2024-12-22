@@ -74,7 +74,7 @@ class GetTriangleInfoHandler(
         val mapper = jacksonObjectMapper()
         mapper.setDefaultPrettyPrinter(DefaultPrettyPrinter())
         val node = mapper.createObjectNode()
-        node.put("MachineId", machineID)
+        node.put("TriangleId", machineID)
         node.put("Error", message)
         return mapper.writeValueAsString(node)
     }

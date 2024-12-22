@@ -28,29 +28,25 @@ class GetListByAreaHandler(
         try {
             minStr?.toDouble()
         } catch (e: Exception) {
-            Response(
-                Status.BAD_REQUEST,
-            ).contentType(
-                ContentType.APPLICATION_JSON,
-            ).body(
-                createError(
-                    "Некорректное значение нижней границы площади. Для параметра area-min ожидается число, но получено текстовое значение «$minStr»",
-                ),
-            )
+            Response(Status.BAD_REQUEST)
+                .contentType(ContentType.APPLICATION_JSON)
+                .body(
+                    createError(
+                        "Некорректное значение нижней границы площади. Для параметра area-min ожидается число, но получено текстовое значение «$minStr»",
+                    ),
+                )
         }
 
         try {
             minStr?.toDouble()
         } catch (e: Exception) {
-            Response(
-                Status.BAD_REQUEST,
-            ).contentType(
-                ContentType.APPLICATION_JSON,
-            ).body(
-                createError(
-                    "Некорректное значение нижней границы площади. Для параметра area-max ожидается число, но получено текстовое значение «$maxStr»",
-                ),
-            )
+            Response(Status.BAD_REQUEST)
+                .contentType(ContentType.APPLICATION_JSON)
+                .body(
+                    createError(
+                        "Некорректное значение нижней границы площади. Для параметра area-max ожидается число, но получено текстовое значение «$maxStr»",
+                    ),
+                )
         }
         try {
             val areaMin = minStr?.toDouble()

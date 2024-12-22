@@ -14,7 +14,6 @@ import ru.yarsu.storages.TemplateStorage
 import ru.yarsu.storages.TriangleStorage
 import ru.yarsu.storages.UserStorage
 import java.lang.IllegalArgumentException
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
@@ -38,9 +37,7 @@ class AddTriangleHandler(
                     if (json.has("RegistrationDateTime")) {
                         LocalDateTime.parse(json["RegistrationDateTime"].asText())
                     } else {
-                        LocalDateTime.parse(
-                            LocalDate.now().toString() + "T00:00:00",
-                        )
+                        LocalDateTime.now()
                     },
                     Color.getType(json["BorderColor"].asText()),
                     Color.getType(json["FillColor"].asText()),
@@ -51,9 +48,13 @@ class AddTriangleHandler(
             val mapper = jacksonObjectMapper()
             val node = mapper.createObjectNode()
             node.put("Id", newID.toString())
-            return Response(Status.CREATED).contentType(ContentType.APPLICATION_JSON).body(mapper.writeValueAsString(node))
+            return Response(Status.CREATED)
+                .contentType(ContentType.APPLICATION_JSON)
+                .body(mapper.writeValueAsString(node))
         } else {
-            return Response(Status.BAD_REQUEST).contentType(ContentType.APPLICATION_JSON).body(validateText)
+            return Response(Status.BAD_REQUEST)
+                .contentType(ContentType.APPLICATION_JSON)
+                .body(validateText)
         }
     }
 
@@ -70,13 +71,13 @@ class AddTriangleHandler(
                         val templateNode = mapper.createObjectNode()
                         templateNode.putIfAbsent("Value", json.get("Template"))
                         templateNode.put("Error", "Работник с UUID ${json.get("Template")} не найден")
-                        errorNode.putIfAbsent("Specialist", templateNode)
+                        errorNode.putIfAbsent("Template", templateNode)
                     }
                 } catch (e: IllegalArgumentException) {
                     val templateNode = mapper.createObjectNode()
                     templateNode.putIfAbsent("Value", json.get("Template"))
                     templateNode.put("Error", "Ожидается корректный UUID, но получено ${json.get("Template")}")
-                    errorNode.putIfAbsent("Specialist", templateNode)
+                    errorNode.putIfAbsent("Template", templateNode)
                 }
             } else {
                 val templateNode = mapper.createObjectNode()

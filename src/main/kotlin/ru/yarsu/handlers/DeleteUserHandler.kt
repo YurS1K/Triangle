@@ -22,36 +22,36 @@ class DeleteUserHandler(
         val userIDString = request.path("user-id").orEmpty()
         try {
             if (userIDString.isEmpty()) {
-                return Response(
-                    Status.BAD_REQUEST,
-                ).body(createError("Некорректное значение переданного параметра id. Ожидается UUID, но получено текстовое значение"))
+                return Response(Status.BAD_REQUEST)
+                    .contentType(ContentType.APPLICATION_JSON)
+                    .body(createError("Некорректное значение переданного параметра id. Ожидается UUID, но получено текстовое значение"))
             }
 
             val user =
                 userStorage.getByID(UUID.fromString(userIDString))
-                    ?: return Response(
-                        Status.NOT_FOUND,
-                    ).contentType(ContentType.APPLICATION_JSON).body(createNotFoundError(userIDString, "Шаблон не найден"))
+                    ?: return Response(Status.NOT_FOUND)
+                        .contentType(ContentType.APPLICATION_JSON)
+                        .body(createNotFoundError(userIDString, "Пользователь не найден"))
 
             triangleStorage.deleteByOwner(user.id)
             userStorage.delete(user)
 
             return Response(Status.NO_CONTENT)
         } catch (e: Exception) {
-            return Response(
-                Status.BAD_REQUEST,
-            ).body(createError("Некорректное значение переданного параметра id. Ожидается UUID, но получено текстовое значение"))
+            return Response(Status.BAD_REQUEST)
+                .contentType(ContentType.APPLICATION_JSON)
+                .body(createError("Некорректное значение переданного параметра id. Ожидается UUID, но получено текстовое значение"))
         }
     }
 
     private fun createNotFoundError(
-        templateID: String,
+        userID: String,
         message: String,
     ): String {
         val mapper = jacksonObjectMapper()
         mapper.setDefaultPrettyPrinter(DefaultPrettyPrinter())
         val node = mapper.createObjectNode()
-        node.put("TemplateId", templateID)
+        node.put("UserId", userID)
         node.put("Error", message)
         return mapper.writeValueAsString(node)
     }

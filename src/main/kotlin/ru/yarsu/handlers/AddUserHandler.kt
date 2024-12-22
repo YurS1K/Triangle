@@ -40,9 +40,13 @@ class AddUserHandler(
             val node = mapper.createObjectNode()
             node.put("Id", newId.toString())
 
-            return Response(Status.CREATED).contentType(ContentType.APPLICATION_JSON).body(mapper.writeValueAsString(node))
+            return Response(Status.CREATED)
+                .contentType(ContentType.APPLICATION_JSON)
+                .body(mapper.writeValueAsString(node))
         }
-        return Response(Status.BAD_REQUEST).contentType(ContentType.APPLICATION_JSON).body(createErrorBody(form))
+        return Response(Status.BAD_REQUEST)
+            .contentType(ContentType.APPLICATION_JSON)
+            .body(createErrorBody(form))
     }
 
     private fun createErrorBody(form: WebForm): String {

@@ -36,14 +36,18 @@ class EditTemplateHandler(
                     templateStorage.getByID(UUID.fromString(templateIDString))
                         ?: return Response(
                             Status.NOT_FOUND,
-                        ).contentType(ContentType.APPLICATION_JSON).body(createNotFoundError(templateIDString, "Шаблон не найден"))
+                        ).contentType(ContentType.APPLICATION_JSON)
+                            .body(createNotFoundError(templateIDString, "Шаблон не найден"))
 
                 val templateBySide = templateStorage.getBySide(json["SideA"].asInt(), json["SideB"].asInt(), json["SideC"].asInt())
-                if (templateBySide != null) {
+
+                if (templateBySide != null && templateBySide.id != template.id) {
                     val mapper = jacksonObjectMapper()
                     val node = mapper.createObjectNode()
                     node.put("Id", templateBySide.id.toString())
-                    return Response(Status.CONFLICT).contentType(ContentType.APPLICATION_JSON).body(mapper.writeValueAsString(node))
+                    return Response(Status.CONFLICT)
+                        .contentType(ContentType.APPLICATION_JSON)
+                        .body(mapper.writeValueAsString(node))
                 }
 
                 templateStorage.delete(template)
@@ -55,7 +59,9 @@ class EditTemplateHandler(
                 ).body(createError("Некорректное значение переданного параметра id. Ожидается UUID, но получено текстовое значение"))
             }
         } else {
-            return Response(Status.BAD_REQUEST).contentType(ContentType.APPLICATION_JSON).body(validateText)
+            return Response(Status.BAD_REQUEST)
+                .contentType(ContentType.APPLICATION_JSON)
+                .body(validateText)
         }
     }
 
@@ -77,7 +83,7 @@ class EditTemplateHandler(
                     sideANode.put("Error", "Ожидается натуральное значение")
                     errorNode.putIfAbsent("SideA", sideANode)
                 } else {
-                    if (json.get("SideA").asInt() >= 1) {
+                    if (json.get("SideA").asInt() < 1) {
                         val sideANode = mapper.createObjectNode()
                         sideANode.putIfAbsent("Value", json.get("SideA"))
                         sideANode.put("Error", "Ожидается натуральное значение")
@@ -97,7 +103,7 @@ class EditTemplateHandler(
                     sideBNode.put("Error", "Ожидается натуральное значение")
                     errorNode.putIfAbsent("SideB", sideBNode)
                 } else {
-                    if (json.get("SideB").asInt() >= 1) {
+                    if (json.get("SideB").asInt() < 1) {
                         val sideBNode = mapper.createObjectNode()
                         sideBNode.putIfAbsent("Value", json.get("SideB"))
                         sideBNode.put("Error", "Ожидается натуральное значение")
@@ -117,7 +123,7 @@ class EditTemplateHandler(
                     sideCNode.put("Error", "Ожидается натуральное значение")
                     errorNode.putIfAbsent("SideC", sideCNode)
                 } else {
-                    if (json.get("SideC").asInt() >= 1) {
+                    if (json.get("SideC").asInt() < 1) {
                         val sideCNode = mapper.createObjectNode()
                         sideCNode.putIfAbsent("Value", json.get("SideC"))
                         sideCNode.put("Error", "Ожидается натуральное значение")

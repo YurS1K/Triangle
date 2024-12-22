@@ -27,7 +27,9 @@ class AddTemplateHandler(
                 val mapper = jacksonObjectMapper()
                 val node = mapper.createObjectNode()
                 node.put("Id", template.id.toString())
-                return Response(Status.CONFLICT).contentType(ContentType.APPLICATION_JSON).body(mapper.writeValueAsString(node))
+                return Response(Status.CONFLICT)
+                    .contentType(ContentType.APPLICATION_JSON)
+                    .body(mapper.writeValueAsString(node))
             } else {
                 val newID = UUID.randomUUID()
 
@@ -37,10 +39,14 @@ class AddTemplateHandler(
 
                 templateStorage.add(Template(newID, json["SideA"].asInt(), json["SideB"].asInt(), json["SideC"].asInt()))
 
-                return Response(Status.CREATED).contentType(ContentType.APPLICATION_JSON).body(mapper.writeValueAsString(node))
+                return Response(Status.CREATED)
+                    .contentType(ContentType.APPLICATION_JSON)
+                    .body(mapper.writeValueAsString(node))
             }
         } else {
-            return Response(Status.BAD_REQUEST).contentType(ContentType.APPLICATION_JSON).body(validateText)
+            return Response(Status.BAD_REQUEST)
+                .contentType(ContentType.APPLICATION_JSON)
+                .body(validateText)
         }
     }
 
@@ -62,7 +68,7 @@ class AddTemplateHandler(
                     sideANode.put("Error", "Ожидается натуральное значение")
                     errorNode.putIfAbsent("SideA", sideANode)
                 } else {
-                    if (json.get("SideA").asInt() >= 1) {
+                    if (json.get("SideA").asInt() < 1) {
                         val sideANode = mapper.createObjectNode()
                         sideANode.putIfAbsent("Value", json.get("SideA"))
                         sideANode.put("Error", "Ожидается натуральное значение")
@@ -82,7 +88,7 @@ class AddTemplateHandler(
                     sideBNode.put("Error", "Ожидается натуральное значение")
                     errorNode.putIfAbsent("SideB", sideBNode)
                 } else {
-                    if (json.get("SideB").asInt() >= 1) {
+                    if (json.get("SideB").asInt() < 1) {
                         val sideBNode = mapper.createObjectNode()
                         sideBNode.putIfAbsent("Value", json.get("SideB"))
                         sideBNode.put("Error", "Ожидается натуральное значение")
@@ -102,7 +108,7 @@ class AddTemplateHandler(
                     sideCNode.put("Error", "Ожидается натуральное значение")
                     errorNode.putIfAbsent("SideC", sideCNode)
                 } else {
-                    if (json.get("SideC").asInt() >= 1) {
+                    if (json.get("SideC").asInt() < 1) {
                         val sideCNode = mapper.createObjectNode()
                         sideCNode.putIfAbsent("Value", json.get("SideC"))
                         sideCNode.put("Error", "Ожидается натуральное значение")

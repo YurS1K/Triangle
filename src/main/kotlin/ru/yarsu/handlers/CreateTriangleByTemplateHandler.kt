@@ -37,21 +37,16 @@ class CreateTriangleByTemplateHandler(
             val json = body.asJsonObject()
             try {
                 if (templateIDString.isEmpty()) {
-                    return Response(
-                        Status.BAD_REQUEST,
-                    ).body(createError("Некорректное значение переданного параметра id. Ожидается UUID, но получено текстовое значение"))
+                    return Response(Status.BAD_REQUEST)
+                        .contentType(ContentType.APPLICATION_JSON)
+                        .body(createError("Некорректное значение переданного параметра id. Ожидается UUID, но получено текстовое значение"))
                 }
 
                 val template =
                     templateStorage.getByID(UUID.fromString(templateIDString))
-                        ?: return Response(
-                            Status.NOT_FOUND,
-                        ).contentType(ContentType.APPLICATION_JSON).body(createNotFoundError(templateIDString, "Шаблон не найден"))
-
-                if (triangleStorage.getByTemplateID(template.id).isEmpty()) {
-                    templateStorage.delete(template)
-                    return Response(Status.NO_CONTENT)
-                }
+                        ?: return Response(Status.NOT_FOUND)
+                            .contentType(ContentType.APPLICATION_JSON)
+                            .body(createNotFoundError(templateIDString, "Шаблон не найден"))
 
                 val newID = UUID.randomUUID()
 
@@ -77,14 +72,18 @@ class CreateTriangleByTemplateHandler(
                 val node = mapper.createObjectNode()
                 node.put("Id", newID.toString())
 
-                return Response(Status.CREATED).contentType(ContentType.APPLICATION_JSON).body(mapper.writeValueAsString(node))
+                return Response(Status.CREATED)
+                    .contentType(ContentType.APPLICATION_JSON)
+                    .body(mapper.writeValueAsString(node))
             } catch (e: Exception) {
-                return Response(
-                    Status.BAD_REQUEST,
-                ).body(createError("Некорректное значение переданного параметра id. Ожидается UUID, но получено текстовое значение"))
+                return Response(Status.BAD_REQUEST)
+                    .contentType(ContentType.APPLICATION_JSON)
+                    .body(createError("Некорректное значение переданного параметра id. Ожидается UUID, но получено текстовое значение"))
             }
         } else {
-            return Response(Status.BAD_REQUEST).contentType(ContentType.APPLICATION_JSON).body(validateText)
+            return Response(Status.BAD_REQUEST)
+                .contentType(ContentType.APPLICATION_JSON)
+                .body(validateText)
         }
     }
 

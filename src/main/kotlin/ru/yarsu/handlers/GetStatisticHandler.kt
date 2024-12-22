@@ -31,15 +31,13 @@ class GetStatisticHandler(
         try {
             StatisticParams.getType(byStr)
         } catch (e: IllegalArgumentException) {
-            return Response(
-                Status.BAD_REQUEST,
-            ).contentType(
-                ContentType.APPLICATION_JSON,
-            ).body(
-                createError(
-                    "Некорректное значение типа статистики. Для параметра by ожидается значение типа статистики, но получено «$byStr»",
-                ),
-            )
+            return Response(Status.BAD_REQUEST)
+                .contentType(ContentType.APPLICATION_JSON)
+                .body(
+                    createError(
+                        "Некорректное значение типа статистики. Для параметра by ожидается значение типа статистики, но получено «$byStr»",
+                    ),
+                )
         }
 
         return Response(Status.OK).contentType(ContentType.APPLICATION_JSON).body(createStatistic(StatisticParams.getType(byStr)))

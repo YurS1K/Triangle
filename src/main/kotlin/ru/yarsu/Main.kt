@@ -161,7 +161,8 @@ fun createRoutes(
     val createTriangleByTemplateHandler = CreateTriangleByTemplateHandler(templateStorage, triangleStorage, userStorage)
     val allUsersHandler = AllUserHandler(userStorage)
     val addUserHandler = AddUserHandler(userStorage)
-    val deleteUserHandler = DeleteUserHandler(templateStorage, triangleStorage, userStorage)
+    val deleteUserHandler = DeleteUserHandler(triangleStorage, userStorage)
+
     return routes(
         "triangles" bind Method.GET to allTrianglesHandler,
         "triangles" bind Method.POST to addTriangleHandler,

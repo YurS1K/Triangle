@@ -1,20 +1,20 @@
 package ru.yarsu.handlers
 
-import org.http4k.core.Request
-import org.http4k.core.Response
-import ru.yarsu.storages.TemplateStorage
-import ru.yarsu.storages.TriangleStorage
-import ru.yarsu.storages.UserStorage
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.http4k.core.ContentType
 import org.http4k.core.HttpHandler
+import org.http4k.core.Request
+import org.http4k.core.Response
 import org.http4k.core.Status
 import org.http4k.format.Jackson.asJsonObject
 import org.http4k.lens.contentType
 import org.http4k.routing.path
 import ru.yarsu.models.Color
 import ru.yarsu.models.Triangle
+import ru.yarsu.storages.TemplateStorage
+import ru.yarsu.storages.TriangleStorage
+import ru.yarsu.storages.UserStorage
 import ru.yarsu.utilities.createError
 import java.lang.IllegalArgumentException
 import java.time.LocalDate
@@ -26,15 +26,14 @@ import java.util.UUID
 class CreateTriangleByTemplateHandler(
     private val templateStorage: TemplateStorage,
     private val triangleStorage: TriangleStorage,
-    private val userStorage: UserStorage
-) : HttpHandler{
+    private val userStorage: UserStorage,
+) : HttpHandler {
     override fun invoke(request: Request): Response {
         val templateIDString = request.path("template-id").orEmpty()
         val body = request.bodyString()
         val validateText = validate(body)
 
-        if (validateText == "{}")
-        {
+        if (validateText == "{}") {
             val json = body.asJsonObject()
             try {
                 if (templateIDString.isEmpty()) {
@@ -43,40 +42,53 @@ class CreateTriangleByTemplateHandler(
                     ).body(createError("Некорректное значение переданного параметра id. Ожидается UUID, но получено текстовое значение"))
                 }
 
-                val template = templateStorage.getByID(UUID.fromString(templateIDString))
-                    ?: return Response(Status.NOT_FOUND).contentType(ContentType.APPLICATION_JSON).body(createNotFoundError(templateIDString, "Шаблон не найден"))
+                val template =
+                    templateStorage.getByID(UUID.fromString(templateIDString))
+                        ?: return Response(
+                            Status.NOT_FOUND,
+                        ).contentType(ContentType.APPLICATION_JSON).body(createNotFoundError(templateIDString, "Шаблон не найден"))
 
-                if(triangleStorage.getByTemplateID(template.id).isEmpty())
-                {
+                if (triangleStorage.getByTemplateID(template.id).isEmpty()) {
                     templateStorage.delete(template)
                     return Response(Status.NO_CONTENT)
                 }
 
                 val newID = UUID.randomUUID()
 
-                triangleStorage.add(Triangle(newID, template.id, if (json.has("RegistrationDateTime")) LocalDateTime.parse(json["RegistrationDateTime"].asText()) else LocalDateTime.parse(LocalDate.now().toString() + "T00:00:00"), Color.getType(json["BorderColor"].asText()), Color.getType(json["FillColor"].asText()), json["Description"].asText(), UUID.fromString(json["Owner"].asText())))
+                triangleStorage.add(
+                    Triangle(
+                        newID,
+                        template.id,
+                        if (json.has("RegistrationDateTime")) {
+                            LocalDateTime.parse(json["RegistrationDateTime"].asText())
+                        } else {
+                            LocalDateTime.parse(
+                                LocalDate.now().toString() + "T00:00:00",
+                            )
+                        },
+                        Color.getType(json["BorderColor"].asText()),
+                        Color.getType(json["FillColor"].asText()),
+                        json["Description"].asText(),
+                        UUID.fromString(json["Owner"].asText()),
+                    ),
+                )
 
                 val mapper = jacksonObjectMapper()
                 val node = mapper.createObjectNode()
                 node.put("Id", newID.toString())
 
                 return Response(Status.CREATED).contentType(ContentType.APPLICATION_JSON).body(mapper.writeValueAsString(node))
-            }
-            catch (e :Exception)
-            {
+            } catch (e: Exception) {
                 return Response(
                     Status.BAD_REQUEST,
                 ).body(createError("Некорректное значение переданного параметра id. Ожидается UUID, но получено текстовое значение"))
             }
-        }
-        else
-        {
+        } else {
             return Response(Status.BAD_REQUEST).contentType(ContentType.APPLICATION_JSON).body(validateText)
         }
     }
 
-    private fun validate(body: String) : String
-    {
+    private fun validate(body: String): String {
         val mapper = jacksonObjectMapper()
         val errorNode = mapper.createObjectNode()
         try {
@@ -160,10 +172,7 @@ class CreateTriangleByTemplateHandler(
                 ownerNode.put("Error", "Поле отсутствует")
                 errorNode.putIfAbsent("Owner", ownerNode)
             }
-
-        }
-        catch (e: Exception)
-        {
+        } catch (e: Exception) {
             errorNode.put("Value", body)
             errorNode.put("Error", "Missing a name for object member.")
             return mapper.writeValueAsString(errorNode)

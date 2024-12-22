@@ -1,7 +1,6 @@
 package ru.yarsu.handlers
 
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
-import ru.yarsu.storages.TriangleStorage
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.http4k.core.ContentType
 import org.http4k.core.HttpHandler
@@ -10,21 +9,24 @@ import org.http4k.core.Response
 import org.http4k.core.Status
 import org.http4k.lens.contentType
 import org.http4k.routing.path
+import ru.yarsu.storages.TriangleStorage
 import ru.yarsu.utilities.createError
 import java.lang.IllegalArgumentException
 import java.util.UUID
 
 class DeleteTriangleHandler(
     private val triangleStorage: TriangleStorage,
-) : HttpHandler
-{
-
+) : HttpHandler {
     override fun invoke(request: Request): Response {
         val triangleIDString = request.path("triangle-id").orEmpty()
         if (triangleIDString.isEmpty()) {
             return Response(Status.BAD_REQUEST)
                 .contentType(ContentType.APPLICATION_JSON)
-                .body(createError("Некорректный идентификатор треугольника. Для параметра triangle-id ожидается UUID, но получено значение $triangleIDString"))
+                .body(
+                    createError(
+                        "Некорректный идентификатор треугольника. Для параметра triangle-id ожидается UUID, но получено значение $triangleIDString",
+                    ),
+                )
         }
         try {
             UUID.fromString(triangleIDString)

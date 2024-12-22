@@ -9,17 +9,15 @@ import org.http4k.core.Response
 import org.http4k.core.Status
 import org.http4k.lens.contentType
 import org.http4k.routing.path
-import ru.yarsu.storages.TemplateStorage
 import ru.yarsu.storages.TriangleStorage
 import ru.yarsu.storages.UserStorage
 import ru.yarsu.utilities.createError
-import java.util.*
+import java.util.UUID
 
 class DeleteUserHandler(
     private val triangleStorage: TriangleStorage,
-    private val userStorage: UserStorage
-) : HttpHandler
-{
+    private val userStorage: UserStorage,
+) : HttpHandler {
     override fun invoke(request: Request): Response {
         val userIDString = request.path("user-id").orEmpty()
         try {
@@ -29,16 +27,17 @@ class DeleteUserHandler(
                 ).body(createError("Некорректное значение переданного параметра id. Ожидается UUID, но получено текстовое значение"))
             }
 
-            val user = userStorage.getByID(UUID.fromString(userIDString))
-                ?: return Response(Status.NOT_FOUND).contentType(ContentType.APPLICATION_JSON).body(createNotFoundError(userIDString, "Шаблон не найден"))
+            val user =
+                userStorage.getByID(UUID.fromString(userIDString))
+                    ?: return Response(
+                        Status.NOT_FOUND,
+                    ).contentType(ContentType.APPLICATION_JSON).body(createNotFoundError(userIDString, "Шаблон не найден"))
 
             triangleStorage.deleteByOwner(user.id)
             userStorage.delete(user)
 
             return Response(Status.NO_CONTENT)
-        }
-        catch (e :Exception)
-        {
+        } catch (e: Exception) {
             return Response(
                 Status.BAD_REQUEST,
             ).body(createError("Некорректное значение переданного параметра id. Ожидается UUID, но получено текстовое значение"))
@@ -57,4 +56,3 @@ class DeleteUserHandler(
         return mapper.writeValueAsString(node)
     }
 }
-

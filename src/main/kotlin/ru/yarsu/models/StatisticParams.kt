@@ -1,11 +1,13 @@
 package ru.yarsu.models
 
 enum class StatisticParams(
-    private val type: String
-){
+    private val type: String,
+) {
     Color("color"),
     Type("type"),
-    ColorType("color,type");
+    ColorType("color,type"),
+    ;
+
     companion object {
         fun getType(value: String): StatisticParams {
             for (enter in StatisticParams.entries) {

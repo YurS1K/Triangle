@@ -19,17 +19,16 @@ import ru.yarsu.utilities.paginateList
 class GetListByColorHandler(
     private val templateStorage: TemplateStorage,
     private val triangleStorage: TriangleStorage,
-): HttpHandler {
-
-    fun createObject(triangles: List<Triangle>):String{
+) : HttpHandler {
+    fun createObject(triangles: List<Triangle>): String {
         val mapper = jacksonObjectMapper()
         val array = mapper.createArrayNode()
 
-        for (triangle in triangles){
+        for (triangle in triangles) {
             val node = mapper.createObjectNode()
             val template = templateStorage.getByID(triangle.template)
             node.put("Id", triangle.id.toString())
-            if (template != null){
+            if (template != null) {
                 node.put("SideA", template.sideA)
                 node.put("SideB", template.sideB)
                 node.put("SideC", template.sideC)
@@ -43,10 +42,11 @@ class GetListByColorHandler(
     override fun invoke(request: Request): Response {
         try {
             val queryParams = request.uri.queries()
-            val borderColorQuery = queryParams.findSingle("border-color")
-                ?: return Response(Status.BAD_REQUEST)
-                    .contentType(ContentType.APPLICATION_JSON)
-                    .body(createError("Некорректный цвет. Для параметра border-color ожидается цвет, но получено значение «color»"))
+            val borderColorQuery =
+                queryParams.findSingle("border-color")
+                    ?: return Response(Status.BAD_REQUEST)
+                        .contentType(ContentType.APPLICATION_JSON)
+                        .body(createError("Некорректный цвет. Для параметра border-color ожидается цвет, но получено значение «color»"))
             val borderColor = Color.getType(borderColorQuery)
 
             val filteredList = triangleStorage.filter { it.borderColor == borderColor }

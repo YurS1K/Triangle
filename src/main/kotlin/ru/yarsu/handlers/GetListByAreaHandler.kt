@@ -19,7 +19,7 @@ import java.util.UUID
 class GetListByAreaHandler(
     private val templateStorage: TemplateStorage,
     private val triangleStorage: TriangleStorage,
-): HttpHandler {
+) : HttpHandler {
     override fun invoke(request: Request): Response {
         val queries = request.uri.queries()
         val minStr = queries.findSingle("area-min")
@@ -27,25 +27,38 @@ class GetListByAreaHandler(
 
         try {
             minStr?.toDouble()
-        }
-        catch (e: Exception)
-        {
-            Response(Status.BAD_REQUEST).contentType(ContentType.APPLICATION_JSON).body(createError("Некорректное значение нижней границы площади. Для параметра area-min ожидается число, но получено текстовое значение «$minStr»"))
+        } catch (e: Exception) {
+            Response(
+                Status.BAD_REQUEST,
+            ).contentType(
+                ContentType.APPLICATION_JSON,
+            ).body(
+                createError(
+                    "Некорректное значение нижней границы площади. Для параметра area-min ожидается число, но получено текстовое значение «$minStr»",
+                ),
+            )
         }
 
         try {
             minStr?.toDouble()
-        }
-        catch (e: Exception)
-        {
-            Response(Status.BAD_REQUEST).contentType(ContentType.APPLICATION_JSON).body(createError("Некорректное значение нижней границы площади. Для параметра area-max ожидается число, но получено текстовое значение «$maxStr»"))
+        } catch (e: Exception) {
+            Response(
+                Status.BAD_REQUEST,
+            ).contentType(
+                ContentType.APPLICATION_JSON,
+            ).body(
+                createError(
+                    "Некорректное значение нижней границы площади. Для параметра area-max ожидается число, но получено текстовое значение «$maxStr»",
+                ),
+            )
         }
         try {
             val areaMin = minStr?.toDouble()
             val areaMax = maxStr?.toDouble()
 
             if (areaMin == null && areaMax == null) {
-                return Response(Status.BAD_REQUEST).contentType(ContentType.APPLICATION_JSON)
+                return Response(Status.BAD_REQUEST)
+                    .contentType(ContentType.APPLICATION_JSON)
                     .body(createError("Отсутствуют параметры area-min и area-max"))
             }
 
@@ -56,31 +69,26 @@ class GetListByAreaHandler(
             }
 
             val triangleList = emptyList<Triangle>().toMutableList()
-            for(i in idList)
-            {
-                for(j in triangleStorage.getByTemplateID(i))
-                {
+            for (i in idList) {
+                for (j in triangleStorage.getByTemplateID(i)) {
                     triangleList.add(j)
                 }
             }
-            val paginated = paginateList(queries, triangleList.toList().sortedWith(compareBy(Triangle::registrationDateTime,Triangle::id)))
+            val paginated = paginateList(queries, triangleList.toList().sortedWith(compareBy(Triangle::registrationDateTime, Triangle::id)))
 
             return Response(Status.OK).contentType(ContentType.APPLICATION_JSON).body(createObject(paginated))
+        } catch (e: IllegalArgumentException) {
+            return Response(Status.BAD_REQUEST)
+                .contentType(ContentType.APPLICATION_JSON)
+                .body(createError(e.message ?: ""))
         }
-        catch (e: IllegalArgumentException) {
-        return Response(Status.BAD_REQUEST)
-            .contentType(ContentType.APPLICATION_JSON)
-            .body(createError(e.message ?: ""))
-        }
-
     }
 
-    private fun createObject(triangleList: List<Triangle>): String{
+    private fun createObject(triangleList: List<Triangle>): String {
         val mapper = jacksonObjectMapper()
         val arrayNode = mapper.createArrayNode()
 
-        for (i in triangleList)
-        {
+        for (i in triangleList) {
             val node = mapper.createObjectNode()
             node.put("Id", i.id.toString())
             node.put("SideA", templateStorage.getByID(i.template)?.sideA)

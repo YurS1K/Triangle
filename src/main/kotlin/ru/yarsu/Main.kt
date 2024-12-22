@@ -32,7 +32,10 @@ import ru.yarsu.handlers.GetListByColorHandler
 import ru.yarsu.handlers.GetStatisticHandler
 import ru.yarsu.handlers.GetTriangleInfoHandler
 import ru.yarsu.handlersV2.AddUserHandler
-import ru.yarsu.models.*
+import ru.yarsu.models.Color
+import ru.yarsu.models.Template
+import ru.yarsu.models.Triangle
+import ru.yarsu.models.User
 import ru.yarsu.storages.TemplateStorage
 import ru.yarsu.storages.TriangleStorage
 import ru.yarsu.storages.UserStorage
@@ -40,7 +43,7 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.*
+import java.util.UUID
 import kotlin.concurrent.thread
 import kotlin.system.exitProcess
 

@@ -16,7 +16,7 @@ import java.util.UUID
 
 class GetInfoTemplateHandler(
     private val templateStorage: TemplateStorage,
-): HttpHandler {
+) : HttpHandler {
     override fun invoke(request: Request): Response {
         val templateIDString = request.path("template-id").orEmpty()
         try {
@@ -26,19 +26,19 @@ class GetInfoTemplateHandler(
                 ).body(createError("Некорректное значение переданного параметра id. Ожидается UUID, но получено текстовое значение"))
             }
 
-            val template = templateStorage.getByID(UUID.fromString(templateIDString))
-                ?: return Response(Status.NOT_FOUND).contentType(ContentType.APPLICATION_JSON).body(createNotFoundError(templateIDString, "Шаблон не найден"))
+            val template =
+                templateStorage.getByID(UUID.fromString(templateIDString))
+                    ?: return Response(
+                        Status.NOT_FOUND,
+                    ).contentType(ContentType.APPLICATION_JSON).body(createNotFoundError(templateIDString, "Шаблон не найден"))
 
             return Response(Status.OK).contentType(ContentType.APPLICATION_JSON).body(createObject(template))
-        }
-        catch (e :Exception)
-        {
+        } catch (e: Exception) {
             return Response(
                 Status.BAD_REQUEST,
             ).body(createError("Некорректное значение переданного параметра id. Ожидается UUID, но получено текстовое значение"))
         }
     }
-
 
     private fun createNotFoundError(
         templateID: String,
@@ -52,9 +52,7 @@ class GetInfoTemplateHandler(
         return mapper.writeValueAsString(node)
     }
 
-    private fun createObject(
-        template: Template,
-    ): String {
+    private fun createObject(template: Template): String {
         val mapper = jacksonObjectMapper()
         mapper.setDefaultPrettyPrinter(DefaultPrettyPrinter())
 

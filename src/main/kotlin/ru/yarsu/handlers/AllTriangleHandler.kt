@@ -18,7 +18,6 @@ import java.time.format.DateTimeFormatter
 class AllTriangleHandler(
     private val triangleStorage: TriangleStorage,
 ) : HttpHandler {
-
     override fun invoke(request: Request): Response {
         try {
             val queryParams = request.uri.queries()

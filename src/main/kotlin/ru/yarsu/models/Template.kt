@@ -12,8 +12,8 @@ data class Template(
 ) {
     val area: Double?
         get() {
-            if(type == TriangleType.Invalid){
-                return  null
+            if (type == TriangleType.Invalid) {
+                return null
             }
             val p = (sideA.toDouble() + sideB.toDouble() + sideC.toDouble()) / 2
             return sqrt(p * (p - sideA) * (p - sideB) * (p - sideC))

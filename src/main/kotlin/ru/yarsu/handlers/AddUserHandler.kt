@@ -31,7 +31,6 @@ class AddUserHandler(
             val login = loginField(form)
             val email = emailField(form)
 
-
             val user = users.getByLogin(login)
             if (user != null) return Response(Status.CONFLICT)
 
@@ -63,7 +62,6 @@ class AddUserHandler(
             errorNode.put("Error", "Отсутствует поле")
             node.putIfAbsent("Email", errorNode)
         }
-
 
         return mapper.writeValueAsString(node)
     }

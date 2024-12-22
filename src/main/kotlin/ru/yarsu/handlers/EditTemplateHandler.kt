@@ -1,7 +1,6 @@
 package ru.yarsu.handlers
 
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
-import ru.yarsu.storages.TriangleStorage
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.http4k.core.ContentType
 import org.http4k.core.HttpHandler
@@ -18,13 +17,12 @@ import java.util.UUID
 
 class EditTemplateHandler(
     private val templateStorage: TemplateStorage,
-) : HttpHandler{
+) : HttpHandler {
     override fun invoke(request: Request): Response {
         val body = request.bodyString()
         val validateText = validate(body)
 
-        if (validateText == "{}")
-        {
+        if (validateText == "{}") {
             val json = body.asJsonObject()
             val templateIDString = request.path("template-id").orEmpty()
             try {
@@ -34,12 +32,14 @@ class EditTemplateHandler(
                     ).body(createError("Некорректное значение переданного параметра id. Ожидается UUID, но получено текстовое значение"))
                 }
 
-                val template = templateStorage.getByID(UUID.fromString(templateIDString))
-                    ?: return Response(Status.NOT_FOUND).contentType(ContentType.APPLICATION_JSON).body(createNotFoundError(templateIDString, "Шаблон не найден"))
+                val template =
+                    templateStorage.getByID(UUID.fromString(templateIDString))
+                        ?: return Response(
+                            Status.NOT_FOUND,
+                        ).contentType(ContentType.APPLICATION_JSON).body(createNotFoundError(templateIDString, "Шаблон не найден"))
 
                 val templateBySide = templateStorage.getBySide(json["SideA"].asInt(), json["SideB"].asInt(), json["SideC"].asInt())
-                if (templateBySide != null)
-                {
+                if (templateBySide != null) {
                     val mapper = jacksonObjectMapper()
                     val node = mapper.createObjectNode()
                     node.put("Id", templateBySide.id.toString())
@@ -49,21 +49,17 @@ class EditTemplateHandler(
                 templateStorage.delete(template)
                 templateStorage.add(Template(template.id, json["SideA"].asInt(), json["SideB"].asInt(), json["SideC"].asInt()))
                 return Response(Status.NO_CONTENT)
-            }
-            catch (e :Exception)
-            {
+            } catch (e: Exception) {
                 return Response(
                     Status.BAD_REQUEST,
                 ).body(createError("Некорректное значение переданного параметра id. Ожидается UUID, но получено текстовое значение"))
             }
-        }
-        else
-        {
+        } else {
             return Response(Status.BAD_REQUEST).contentType(ContentType.APPLICATION_JSON).body(validateText)
         }
     }
 
-    private fun validate(body: String): String{
+    private fun validate(body: String): String {
         val mapper = jacksonObjectMapper()
         val errorNode = mapper.createObjectNode()
         try {
@@ -130,9 +126,7 @@ class EditTemplateHandler(
                 }
             }
             return mapper.writeValueAsString(errorNode)
-        }
-        catch (e: Exception)
-        {
+        } catch (e: Exception) {
             errorNode.put("Value", body)
             errorNode.put("Error", "Missing a name for object member.")
             return mapper.writeValueAsString(errorNode)
@@ -151,9 +145,7 @@ class EditTemplateHandler(
         return mapper.writeValueAsString(node)
     }
 
-    private fun createObject(
-        template: Template,
-    ): String {
+    private fun createObject(template: Template): String {
         val mapper = jacksonObjectMapper()
         mapper.setDefaultPrettyPrinter(DefaultPrettyPrinter())
 
@@ -167,5 +159,4 @@ class EditTemplateHandler(
 
         return mapper.writeValueAsString(node)
     }
-
 }

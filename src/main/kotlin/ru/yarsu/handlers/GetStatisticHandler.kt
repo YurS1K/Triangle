@@ -18,34 +18,41 @@ import ru.yarsu.utilities.createError
 class GetStatisticHandler(
     private val templateStorage: TemplateStorage,
     private val triangleStorage: TriangleStorage,
-) : HttpHandler
-{
+) : HttpHandler {
     override fun invoke(request: Request): Response {
         val queries = request.uri.queries()
 
-        val byStr = queries.findSingle("by")
-            ?: return Response(Status.BAD_REQUEST).contentType(ContentType.APPLICATION_JSON).body(createError("Отсутствует параметр by"))
+        val byStr =
+            queries.findSingle("by")
+                ?: return Response(
+                    Status.BAD_REQUEST,
+                ).contentType(ContentType.APPLICATION_JSON).body(createError("Отсутствует параметр by"))
 
         try {
             StatisticParams.getType(byStr)
-        }
-        catch (e: IllegalArgumentException)
-        {
-            return Response(Status.BAD_REQUEST).contentType(ContentType.APPLICATION_JSON).body(createError("Некорректное значение типа статистики. Для параметра by ожидается значение типа статистики, но получено «$byStr»"))
+        } catch (e: IllegalArgumentException) {
+            return Response(
+                Status.BAD_REQUEST,
+            ).contentType(
+                ContentType.APPLICATION_JSON,
+            ).body(
+                createError(
+                    "Некорректное значение типа статистики. Для параметра by ожидается значение типа статистики, но получено «$byStr»",
+                ),
+            )
         }
 
         return Response(Status.OK).contentType(ContentType.APPLICATION_JSON).body(createStatistic(StatisticParams.getType(byStr)))
     }
 
-    private fun createStatistic(by: StatisticParams): String
-    {
+    private fun createStatistic(by: StatisticParams): String {
         val mapper = jacksonObjectMapper()
         val node = mapper.createObjectNode()
 
-        if(by == StatisticParams.Color || by == StatisticParams.ColorType) {
+        if (by == StatisticParams.Color || by == StatisticParams.ColorType) {
             val arrayNode = mapper.createArrayNode()
             for (i in Color.entries.sortedWith(compareBy(Color::color))) {
-                if(triangleStorage.getByColor(i).isNotEmpty()) {
+                if (triangleStorage.getByColor(i).isNotEmpty()) {
                     val colorNode = mapper.createObjectNode()
                     colorNode.put("color", i.color)
                     colorNode.put("count", triangleStorage.getByColor(i).size)
@@ -55,7 +62,7 @@ class GetStatisticHandler(
             node.putIfAbsent("statisticByColor", arrayNode)
         }
 
-        if(by == StatisticParams.Type || by == StatisticParams.ColorType) {
+        if (by == StatisticParams.Type || by == StatisticParams.ColorType) {
             val arrayNode = mapper.createArrayNode()
             for (i in TriangleType.entries.sortedWith(compareBy(TriangleType::type))) {
                 if (triangleStorage.getByType(i, templateStorage).isNotEmpty()) {

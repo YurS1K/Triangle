@@ -17,14 +17,13 @@ import ru.yarsu.storages.TriangleStorage
 import ru.yarsu.storages.UserStorage
 import ru.yarsu.utilities.createError
 import java.time.format.DateTimeFormatter
-import java.util.*
+import java.util.UUID
 
 class GetTriangleInfoHandler(
     private val templateStorage: TemplateStorage,
     private val triangleStorage: TriangleStorage,
-    private val userStorage: UserStorage
-): HttpHandler {
-
+    private val userStorage: UserStorage,
+) : HttpHandler {
     override fun invoke(request: Request): Response {
         val triangleIDString = request.path("triangle-id").orEmpty()
         try {
@@ -91,14 +90,13 @@ class GetTriangleInfoHandler(
         val node = mapper.createObjectNode()
         node.put("Id", triangle.id.toString())
         node.put("Template", triangle.template.toString())
-        if(template != null){
+        if (template != null) {
             node.put("SideA", template.sideA)
             node.put("SideB", template.sideB)
             node.put("SideC", template.sideC)
-            if(template.area != null){
+            if (template.area != null) {
                 node.put("Area", template.area)
-            }
-            else{
+            } else {
                 node.putIfAbsent("Area", null)
             }
             node.put("Type", template.type.type)
@@ -109,7 +107,6 @@ class GetTriangleInfoHandler(
         node.put("Description", triangle.description)
         node.put("Owner", owner.id.toString())
         node.put("OwnerLogin", owner.login)
-
 
         return mapper.writeValueAsString(node)
     }

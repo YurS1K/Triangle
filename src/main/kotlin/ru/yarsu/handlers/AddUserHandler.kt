@@ -1,4 +1,4 @@
-package ru.yarsu.handlersV2
+package ru.yarsu.handlers
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.http4k.core.Body

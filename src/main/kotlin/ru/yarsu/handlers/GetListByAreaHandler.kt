@@ -28,7 +28,7 @@ class GetListByAreaHandler(
         try {
             minStr?.toDouble()
         } catch (e: Exception) {
-            Response(Status.BAD_REQUEST)
+            return Response(Status.BAD_REQUEST)
                 .contentType(ContentType.APPLICATION_JSON)
                 .body(
                     createError(
@@ -40,7 +40,7 @@ class GetListByAreaHandler(
         try {
             minStr?.toDouble()
         } catch (e: Exception) {
-            Response(Status.BAD_REQUEST)
+            return Response(Status.BAD_REQUEST)
                 .contentType(ContentType.APPLICATION_JSON)
                 .body(
                     createError(

@@ -20,7 +20,7 @@ class GetListByColorHandler(
     private val templateStorage: TemplateStorage,
     private val triangleStorage: TriangleStorage,
 ) : HttpHandler {
-    fun createObject(triangles: List<Triangle>): String {
+    private fun createObject(triangles: List<Triangle>): String {
         val mapper = jacksonObjectMapper()
         val array = mapper.createArrayNode()
 

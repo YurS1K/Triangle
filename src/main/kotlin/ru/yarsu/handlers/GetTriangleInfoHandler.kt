@@ -28,9 +28,9 @@ class GetTriangleInfoHandler(
         val triangleIDString = request.path("triangle-id").orEmpty()
         try {
             if (triangleIDString.isEmpty()) {
-                return Response(
-                    Status.BAD_REQUEST,
-                ).body(createError("Некорректное значение переданного параметра id. Ожидается UUID, но получено текстовое значение"))
+                return Response(Status.BAD_REQUEST)
+                    .contentType(ContentType.APPLICATION_JSON)
+                    .body(createError("Некорректное значение переданного параметра id. Ожидается UUID, но получено текстовое значение"))
             }
 
             val triangleID = UUID.fromString(triangleIDString)

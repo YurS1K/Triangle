@@ -9,6 +9,7 @@ import org.http4k.core.HttpHandler
 import org.http4k.core.Method
 import org.http4k.core.Response
 import org.http4k.core.Status
+import org.http4k.core.then
 import org.http4k.lens.contentType
 import org.http4k.routing.RoutingHttpHandler
 import org.http4k.routing.bind
@@ -31,7 +32,7 @@ import ru.yarsu.handlers.GetListByAreaHandler
 import ru.yarsu.handlers.GetListByColorHandler
 import ru.yarsu.handlers.GetStatisticHandler
 import ru.yarsu.handlers.GetTriangleInfoHandler
-import ru.yarsu.handlersV2.AddUserHandler
+import ru.yarsu.handlers.AddUserHandler
 import ru.yarsu.models.Color
 import ru.yarsu.models.Template
 import ru.yarsu.models.Triangle
@@ -39,6 +40,7 @@ import ru.yarsu.models.User
 import ru.yarsu.storages.TemplateStorage
 import ru.yarsu.storages.TriangleStorage
 import ru.yarsu.storages.UserStorage
+import ru.yarsu.utilities.jsonContentTypeFilter
 import java.io.File
 import java.io.FileNotFoundException
 import java.time.LocalDateTime
@@ -280,12 +282,12 @@ fun main(args: Array<String>) {
         val apiRoutes = createRoutes(templateStorage, triangleStorage, userStorage)
 
         val app: HttpHandler =
-            routes(
+            jsonContentTypeFilter.then(routes(
                 "ping" bind Method.GET to {
                     Response(Status.OK).contentType(ContentType.TEXT_HTML).body("Приложение запущено")
                 },
                 "v2" bind apiRoutes,
-            )
+            ))
         app.asServer(Netty(command.port)).start()
         Runtime
             .getRuntime()

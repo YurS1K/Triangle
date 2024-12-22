@@ -27,9 +27,8 @@ class EditTemplateHandler(
             val templateIDString = request.path("template-id").orEmpty()
             try {
                 if (templateIDString.isEmpty()) {
-                    return Response(
-                        Status.BAD_REQUEST,
-                    ).body(createError("Некорректное значение переданного параметра id. Ожидается UUID, но получено текстовое значение"))
+                    return Response(Status.BAD_REQUEST)
+                        .body(createError("Некорректное значение переданного параметра id. Ожидается UUID, но получено текстовое значение"))
                 }
 
                 val template =
@@ -151,18 +150,4 @@ class EditTemplateHandler(
         return mapper.writeValueAsString(node)
     }
 
-    private fun createObject(template: Template): String {
-        val mapper = jacksonObjectMapper()
-        mapper.setDefaultPrettyPrinter(DefaultPrettyPrinter())
-
-        val node = mapper.createObjectNode()
-        node.put("Id", template.id.toString())
-        node.put("SideA", template.sideA)
-        node.put("SideB", template.sideB)
-        node.put("SideC", template.sideC)
-        node.put("Area", template.area)
-        node.put("Type", template.type.type)
-
-        return mapper.writeValueAsString(node)
-    }
 }

@@ -24,9 +24,9 @@ class GetStatisticHandler(
 
         val byStr =
             queries.findSingle("by")
-                ?: return Response(
-                    Status.BAD_REQUEST,
-                ).contentType(ContentType.APPLICATION_JSON).body(createError("Отсутствует параметр by"))
+                ?: return Response(Status.BAD_REQUEST)
+                    .contentType(ContentType.APPLICATION_JSON)
+                    .body(createError("Отсутствует параметр by"))
 
         try {
             StatisticParams.getType(byStr)

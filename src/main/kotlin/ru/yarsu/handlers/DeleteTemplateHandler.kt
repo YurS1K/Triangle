@@ -41,7 +41,11 @@ class DeleteTemplateHandler(
 
             return Response(Status.FORBIDDEN)
                 .contentType(ContentType.APPLICATION_JSON)
-                .body(createObject(triangleStorage.getByTemplateID(template.id).sortedWith(compareBy(Triangle::registrationDateTime, Triangle::id))))
+                .body(
+                    createObject(
+                        triangleStorage.getByTemplateID(template.id).sortedWith(compareBy(Triangle::registrationDateTime, Triangle::id)),
+                    ),
+                )
         } catch (e: Exception) {
             return Response(Status.BAD_REQUEST)
                 .contentType(ContentType.APPLICATION_JSON)

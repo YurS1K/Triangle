@@ -33,9 +33,7 @@ class EditTemplateHandler(
 
                 val template =
                     templateStorage.getByID(UUID.fromString(templateIDString))
-                        ?: return Response(
-                            Status.NOT_FOUND,
-                        ).contentType(ContentType.APPLICATION_JSON)
+                        ?: return Response(Status.NOT_FOUND)
                             .body(createNotFoundError(templateIDString, "Шаблон не найден"))
 
                 val templateBySide = templateStorage.getBySide(json["SideA"].asInt(), json["SideB"].asInt(), json["SideC"].asInt())
@@ -45,7 +43,6 @@ class EditTemplateHandler(
                     val node = mapper.createObjectNode()
                     node.put("Id", templateBySide.id.toString())
                     return Response(Status.CONFLICT)
-                        .contentType(ContentType.APPLICATION_JSON)
                         .body(mapper.writeValueAsString(node))
                 }
 
@@ -59,7 +56,6 @@ class EditTemplateHandler(
             }
         } else {
             return Response(Status.BAD_REQUEST)
-                .contentType(ContentType.APPLICATION_JSON)
                 .body(validateText)
         }
     }

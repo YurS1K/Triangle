@@ -28,15 +28,12 @@ class AllTriangleHandler(
             val body = createObject(paginated)
 
             return Response(Status.OK)
-                .contentType(ContentType.APPLICATION_JSON)
                 .body(body)
         } catch (e: NumberFormatException) {
             return Response(Status.BAD_REQUEST)
-                .contentType(ContentType.APPLICATION_JSON)
                 .body(createError("Ожидалось натуральное число в параметре page"))
         } catch (e: IllegalArgumentException) {
             return Response(Status.BAD_REQUEST)
-                .contentType(ContentType.APPLICATION_JSON)
                 .body(createError(e.message ?: ""))
         }
     }

@@ -29,7 +29,6 @@ class GetListByAreaHandler(
             minStr?.toDouble()
         } catch (e: Exception) {
             return Response(Status.BAD_REQUEST)
-                .contentType(ContentType.APPLICATION_JSON)
                 .body(
                     createError(
                         "Некорректное значение нижней границы площади. Для параметра area-min ожидается число, но получено текстовое значение «$minStr»",
@@ -41,7 +40,6 @@ class GetListByAreaHandler(
             minStr?.toDouble()
         } catch (e: Exception) {
             return Response(Status.BAD_REQUEST)
-                .contentType(ContentType.APPLICATION_JSON)
                 .body(
                     createError(
                         "Некорректное значение нижней границы площади. Для параметра area-max ожидается число, но получено текстовое значение «$maxStr»",
@@ -54,7 +52,6 @@ class GetListByAreaHandler(
 
             if (areaMin == null && areaMax == null) {
                 return Response(Status.BAD_REQUEST)
-                    .contentType(ContentType.APPLICATION_JSON)
                     .body(createError("Отсутствуют параметры area-min и area-max"))
             }
 
@@ -72,10 +69,10 @@ class GetListByAreaHandler(
             }
             val paginated = paginateList(queries, triangleList.toList().sortedWith(compareBy(Triangle::registrationDateTime, Triangle::id)))
 
-            return Response(Status.OK).contentType(ContentType.APPLICATION_JSON).body(createObject(paginated))
+            return Response(Status.OK)
+                .body(createObject(paginated))
         } catch (e: IllegalArgumentException) {
             return Response(Status.BAD_REQUEST)
-                .contentType(ContentType.APPLICATION_JSON)
                 .body(createError(e.message ?: ""))
         }
     }

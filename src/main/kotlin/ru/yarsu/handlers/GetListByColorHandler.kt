@@ -45,7 +45,6 @@ class GetListByColorHandler(
             val borderColorQuery =
                 queryParams.findSingle("border-color")
                     ?: return Response(Status.BAD_REQUEST)
-                        .contentType(ContentType.APPLICATION_JSON)
                         .body(createError("Некорректный цвет. Для параметра border-color ожидается цвет, но получено значение «color»"))
             val borderColor = Color.getType(borderColorQuery)
 
@@ -56,15 +55,12 @@ class GetListByColorHandler(
             val body = createObject(paginated)
 
             return Response(Status.OK)
-                .contentType(ContentType.APPLICATION_JSON)
                 .body(body)
         } catch (e: NumberFormatException) {
             return Response(Status.BAD_REQUEST)
-                .contentType(ContentType.APPLICATION_JSON)
                 .body(createError("Ожидалось натуральное число в параметре page"))
         } catch (e: IllegalArgumentException) {
             return Response(Status.BAD_REQUEST)
-                .contentType(ContentType.APPLICATION_JSON)
                 .body(createError(e.message ?: ""))
         }
     }

@@ -29,7 +29,6 @@ class GetTriangleInfoHandler(
         try {
             if (triangleIDString.isEmpty()) {
                 return Response(Status.BAD_REQUEST)
-                    .contentType(ContentType.APPLICATION_JSON)
                     .body(createError("Некорректное значение переданного параметра id. Ожидается UUID, но получено текстовое значение"))
             }
 
@@ -37,13 +36,11 @@ class GetTriangleInfoHandler(
             val triangle =
                 triangleStorage.getByID(triangleID)
                     ?: return Response(Status.NOT_FOUND)
-                        .contentType(ContentType.APPLICATION_JSON)
                         .body(createNotFoundError(triangleIDString, "Треугольник не найден"))
 
             val owner =
                 userStorage.getByID(triangle.owner)
                     ?: return Response(Status.NOT_FOUND)
-                        .contentType(ContentType.APPLICATION_JSON)
                         .body(
                             createNotFoundError(
                                 triangleIDString,
@@ -54,11 +51,9 @@ class GetTriangleInfoHandler(
             val template = templateStorage.getByID(triangle.template)
 
             return Response(Status.OK)
-                .contentType(ContentType.APPLICATION_JSON)
                 .body(createObject(triangle, owner, template))
         } catch (e: IllegalArgumentException) {
             return Response(Status.BAD_REQUEST)
-                .contentType(ContentType.APPLICATION_JSON)
                 .body(
                     createError(
                         "Некорректное значение переданного параметра id. Ожидается UUID, но получено текстовое значение",

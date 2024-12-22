@@ -22,22 +22,18 @@ class GetInfoTemplateHandler(
         try {
             if (templateIDString.isEmpty()) {
                 return Response(Status.BAD_REQUEST)
-                    .contentType(ContentType.APPLICATION_JSON)
                     .body(createError("Некорректное значение переданного параметра id. Ожидается UUID, но получено текстовое значение"))
             }
 
             val template =
                 templateStorage.getByID(UUID.fromString(templateIDString))
                     ?: return Response(Status.NOT_FOUND)
-                        .contentType(ContentType.APPLICATION_JSON)
                         .body(createNotFoundError(templateIDString, "Шаблон не найден"))
 
             return Response(Status.OK)
-                .contentType(ContentType.APPLICATION_JSON)
                 .body(createObject(template))
         } catch (e: Exception) {
             return Response(Status.BAD_REQUEST)
-                .contentType(ContentType.APPLICATION_JSON)
                 .body(createError("Некорректное значение переданного параметра id. Ожидается UUID, но получено текстовое значение"))
         }
     }

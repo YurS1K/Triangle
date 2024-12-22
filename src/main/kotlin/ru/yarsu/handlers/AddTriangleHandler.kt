@@ -49,11 +49,9 @@ class AddTriangleHandler(
             val node = mapper.createObjectNode()
             node.put("Id", newID.toString())
             return Response(Status.CREATED)
-                .contentType(ContentType.APPLICATION_JSON)
                 .body(mapper.writeValueAsString(node))
         } else {
             return Response(Status.BAD_REQUEST)
-                .contentType(ContentType.APPLICATION_JSON)
                 .body(validateText)
         }
     }

@@ -23,14 +23,12 @@ class DeleteUserHandler(
         try {
             if (userIDString.isEmpty()) {
                 return Response(Status.BAD_REQUEST)
-                    .contentType(ContentType.APPLICATION_JSON)
                     .body(createError("Некорректное значение переданного параметра id. Ожидается UUID, но получено текстовое значение"))
             }
 
             val user =
                 userStorage.getByID(UUID.fromString(userIDString))
                     ?: return Response(Status.NOT_FOUND)
-                        .contentType(ContentType.APPLICATION_JSON)
                         .body(createNotFoundError(userIDString, "Пользователь не найден"))
 
             triangleStorage.deleteByOwner(user.id)
@@ -39,7 +37,6 @@ class DeleteUserHandler(
             return Response(Status.NO_CONTENT)
         } catch (e: Exception) {
             return Response(Status.BAD_REQUEST)
-                .contentType(ContentType.APPLICATION_JSON)
                 .body(createError("Некорректное значение переданного параметра id. Ожидается UUID, но получено текстовое значение"))
         }
     }

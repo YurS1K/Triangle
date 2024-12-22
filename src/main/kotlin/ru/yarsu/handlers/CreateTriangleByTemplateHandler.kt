@@ -38,14 +38,12 @@ class CreateTriangleByTemplateHandler(
             try {
                 if (templateIDString.isEmpty()) {
                     return Response(Status.BAD_REQUEST)
-                        .contentType(ContentType.APPLICATION_JSON)
                         .body(createError("Некорректное значение переданного параметра id. Ожидается UUID, но получено текстовое значение"))
                 }
 
                 val template =
                     templateStorage.getByID(UUID.fromString(templateIDString))
                         ?: return Response(Status.NOT_FOUND)
-                            .contentType(ContentType.APPLICATION_JSON)
                             .body(createNotFoundError(templateIDString, "Шаблон не найден"))
 
                 val newID = UUID.randomUUID()
@@ -73,16 +71,13 @@ class CreateTriangleByTemplateHandler(
                 node.put("Id", newID.toString())
 
                 return Response(Status.CREATED)
-                    .contentType(ContentType.APPLICATION_JSON)
                     .body(mapper.writeValueAsString(node))
             } catch (e: Exception) {
                 return Response(Status.BAD_REQUEST)
-                    .contentType(ContentType.APPLICATION_JSON)
                     .body(createError("Некорректное значение переданного параметра id. Ожидается UUID, но получено текстовое значение"))
             }
         } else {
             return Response(Status.BAD_REQUEST)
-                .contentType(ContentType.APPLICATION_JSON)
                 .body(validateText)
         }
     }

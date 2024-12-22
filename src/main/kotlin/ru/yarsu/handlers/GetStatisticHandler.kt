@@ -25,14 +25,12 @@ class GetStatisticHandler(
         val byStr =
             queries.findSingle("by")
                 ?: return Response(Status.BAD_REQUEST)
-                    .contentType(ContentType.APPLICATION_JSON)
                     .body(createError("Отсутствует параметр by"))
 
         try {
             StatisticParams.getType(byStr)
         } catch (e: IllegalArgumentException) {
             return Response(Status.BAD_REQUEST)
-                .contentType(ContentType.APPLICATION_JSON)
                 .body(
                     createError(
                         "Некорректное значение типа статистики. Для параметра by ожидается значение типа статистики, но получено «$byStr»",
@@ -40,7 +38,8 @@ class GetStatisticHandler(
                 )
         }
 
-        return Response(Status.OK).contentType(ContentType.APPLICATION_JSON).body(createStatistic(StatisticParams.getType(byStr)))
+        return Response(Status.OK)
+            .body(createStatistic(StatisticParams.getType(byStr)))
     }
 
     private fun createStatistic(by: StatisticParams): String {

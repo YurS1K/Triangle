@@ -28,7 +28,6 @@ class AddTemplateHandler(
                 val node = mapper.createObjectNode()
                 node.put("Id", template.id.toString())
                 return Response(Status.CONFLICT)
-                    .contentType(ContentType.APPLICATION_JSON)
                     .body(mapper.writeValueAsString(node))
             } else {
                 val newID = UUID.randomUUID()
@@ -40,12 +39,10 @@ class AddTemplateHandler(
                 templateStorage.add(Template(newID, json["SideA"].asInt(), json["SideB"].asInt(), json["SideC"].asInt()))
 
                 return Response(Status.CREATED)
-                    .contentType(ContentType.APPLICATION_JSON)
                     .body(mapper.writeValueAsString(node))
             }
         } else {
             return Response(Status.BAD_REQUEST)
-                .contentType(ContentType.APPLICATION_JSON)
                 .body(validateText)
         }
     }

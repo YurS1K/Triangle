@@ -22,7 +22,6 @@ class DeleteTriangleHandler(
 
         if (triangleIDString.isEmpty()) {
             return Response(Status.BAD_REQUEST)
-                .contentType(ContentType.APPLICATION_JSON)
                 .body(
                     createError(
                         "Некорректный идентификатор треугольника. Для параметра triangle-id ожидается UUID, но получено значение $triangleIDString",
@@ -34,7 +33,6 @@ class DeleteTriangleHandler(
             UUID.fromString(triangleIDString)
         } catch (e: IllegalArgumentException) {
             return Response(Status.BAD_REQUEST)
-                .contentType(ContentType.APPLICATION_JSON)
                 .body(createError("Некорректное значение переданного параметра id. Ожидается UUID, но получено текстовое значение"))
         }
 
@@ -45,7 +43,6 @@ class DeleteTriangleHandler(
             return Response(Status.NO_CONTENT)
         } else {
             return Response(Status.NOT_FOUND)
-                .contentType(ContentType.APPLICATION_JSON)
                 .body(createNotFoundError(triangleIDString, "Треугольник не найден"))
         }
     }

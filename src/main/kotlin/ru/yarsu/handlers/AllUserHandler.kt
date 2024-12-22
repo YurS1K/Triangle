@@ -1,12 +1,10 @@
 package ru.yarsu.handlers
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import org.http4k.core.ContentType
 import org.http4k.core.HttpHandler
 import org.http4k.core.Request
 import org.http4k.core.Response
 import org.http4k.core.Status
-import org.http4k.lens.contentType
 import ru.yarsu.models.User
 import ru.yarsu.storages.UserStorage
 
@@ -27,7 +25,6 @@ class AllUserHandler(
         }
 
         return Response(Status.OK)
-            .contentType(ContentType.APPLICATION_JSON)
             .body(mapper.writeValueAsString(arrayNode))
     }
 }

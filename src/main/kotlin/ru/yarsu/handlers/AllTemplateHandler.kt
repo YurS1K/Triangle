@@ -27,7 +27,6 @@ class AllTemplateHandler(
         }
 
         return Response(Status.OK)
-            .contentType(ContentType.APPLICATION_JSON)
             .body(mapper.writeValueAsString(arrayNode))
     }
 }

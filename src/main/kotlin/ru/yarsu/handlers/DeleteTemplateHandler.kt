@@ -24,14 +24,12 @@ class DeleteTemplateHandler(
         try {
             if (templateIDString.isEmpty()) {
                 return Response(Status.BAD_REQUEST)
-                    .contentType(ContentType.APPLICATION_JSON)
                     .body(createError("Некорректное значение переданного параметра id. Ожидается UUID, но получено текстовое значение"))
             }
 
             val template =
                 templateStorage.getByID(UUID.fromString(templateIDString))
                     ?: return Response(Status.NOT_FOUND)
-                        .contentType(ContentType.APPLICATION_JSON)
                         .body(createNotFoundError(templateIDString, "Шаблон не найден"))
 
             if (triangleStorage.getByTemplateID(template.id).isEmpty()) {
@@ -40,7 +38,6 @@ class DeleteTemplateHandler(
             }
 
             return Response(Status.FORBIDDEN)
-                .contentType(ContentType.APPLICATION_JSON)
                 .body(
                     createObject(
                         triangleStorage.getByTemplateID(template.id).sortedWith(compareBy(Triangle::registrationDateTime, Triangle::id)),
@@ -48,7 +45,6 @@ class DeleteTemplateHandler(
                 )
         } catch (e: Exception) {
             return Response(Status.BAD_REQUEST)
-                .contentType(ContentType.APPLICATION_JSON)
                 .body(createError("Некорректное значение переданного параметра id. Ожидается UUID, но получено текстовое значение"))
         }
     }

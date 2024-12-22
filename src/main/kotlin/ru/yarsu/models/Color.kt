@@ -2,7 +2,7 @@ package ru.yarsu.models
 
 enum class Color(
     val color: String,
-){
+) {
     Black("BLACK"),
     White("WHITE"),
     Red("RED"),
@@ -17,10 +17,11 @@ enum class Color(
     Olive("OLIVE"),
     DarkGreen("DARKGREEN"),
     Purple("PURPLE"),
-    Teal("TEAL");
+    Teal("TEAL"),
+    ;
 
-    companion object{
-        fun getType(value: String): Color{
+    companion object {
+        fun getType(value: String): Color {
             for (enter in Color.entries) {
                 if (enter.color == value) {
                     return enter

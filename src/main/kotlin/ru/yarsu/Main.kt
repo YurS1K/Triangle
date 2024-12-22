@@ -16,10 +16,23 @@ import org.http4k.routing.routes
 import org.http4k.server.Netty
 import org.http4k.server.asServer
 import ru.yarsu.forCommander.RequiredParameter
-import ru.yarsu.models.Color
-import ru.yarsu.models.Triangle
-import ru.yarsu.models.Template
-import ru.yarsu.models.User
+import ru.yarsu.handlers.AddTemplateHandler
+import ru.yarsu.handlers.AddTriangleHandler
+import ru.yarsu.handlers.AllTemplateHandler
+import ru.yarsu.handlers.AllTriangleHandler
+import ru.yarsu.handlers.AllUserHandler
+import ru.yarsu.handlers.CreateTriangleByTemplateHandler
+import ru.yarsu.handlers.DeleteTemplateHandler
+import ru.yarsu.handlers.DeleteTriangleHandler
+import ru.yarsu.handlers.DeleteUserHandler
+import ru.yarsu.handlers.EditTemplateHandler
+import ru.yarsu.handlers.GetInfoTemplateHandler
+import ru.yarsu.handlers.GetListByAreaHandler
+import ru.yarsu.handlers.GetListByColorHandler
+import ru.yarsu.handlers.GetStatisticHandler
+import ru.yarsu.handlers.GetTriangleInfoHandler
+import ru.yarsu.handlersV2.AddUserHandler
+import ru.yarsu.models.*
 import ru.yarsu.storages.TemplateStorage
 import ru.yarsu.storages.TriangleStorage
 import ru.yarsu.storages.UserStorage
@@ -27,7 +40,7 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.UUID
+import java.util.*
 import kotlin.concurrent.thread
 import kotlin.system.exitProcess
 
@@ -51,10 +64,10 @@ fun readFile(filePath: String): List<Triangle> {
     }
 
     val afterReader = csvReader().readAll(File(filePath))
-    var firstStringWasSkip = false
+    var firstStringWasSkipped = false
     var triangleID: UUID?
     for (str in afterReader) {
-        if (firstStringWasSkip) {
+        if (firstStringWasSkipped) {
             triangle =
                 Triangle(
                     UUID.fromString(str[0]),
@@ -67,7 +80,7 @@ fun readFile(filePath: String): List<Triangle> {
                 )
             result.add(triangle)
         } else {
-            firstStringWasSkip = true
+            firstStringWasSkipped = true
             continue
         }
     }
@@ -109,24 +122,23 @@ fun readTemplates(filePath: String): List<Template> {
     }
 
     val afterReader = csvReader().readAll(File(filePath))
-    var firstStringWasSkip = false
+    var firstStringWasSkipped = false
     for (str in afterReader) {
-        if (firstStringWasSkip) {
+        if (firstStringWasSkipped) {
             template =
                 Template(
                     UUID.fromString(str[0]),
                     str[1].toInt(),
                     str[2].toInt(),
                     str[3].toInt(),
-                    
                 )
-            launderettesList.add(launderette)
+            templateList.add(template)
         } else {
-            firstStringWasSkip = true
+            firstStringWasSkipped = true
             continue
         }
     }
-    return launderettesList.toList()
+    return templateList.toList()
 }
 
 fun createRoutes(
@@ -134,30 +146,30 @@ fun createRoutes(
     triangleStorage: TriangleStorage,
     userStorage: UserStorage,
 ): RoutingHttpHandler {
-    val allTrianglesHandler = AllTriangleHandler(templateStorage, triangleStorage, userStorage)
+    val allTrianglesHandler = AllTriangleHandler(triangleStorage)
     val addTriangleHandler = AddTriangleHandler(templateStorage, triangleStorage, userStorage)
     val getTriangleInfoHandler = GetTriangleInfoHandler(templateStorage, triangleStorage, userStorage)
-    val deleteTriangleHandler = DeleteTriangleHandler(templateStorage, triangleStorage, userStorage)
-    val getListByColorHandler = GetListByColorHandler(templateStorage, triangleStorage, userStorage)
-    val getListByAreaHandler = GetListByAreaHandler(templateStorage, triangleStorage,userStorage)
-    val getStatisticHandler = GetStatisticHandler(templateStorage, triangleStorage, userStorage)
-    val allTemplatesHandler = AllTemplateHandler(templateStorage, triangleStorage, userStorage)
-    val addTemplateHandler = AddTemplateHandler(templateStorage, triangleStorage, userStorage)
-    val getTemplateInfoHandler = GetInfoTemplateHandler(templateStorage, triangleStorage, userStorage)
-    val deleteTemplateHandler = DeleteTemplateHandler(templateStorage, triangleStorage, userStorage)
-    val editTemplateHandler = EditTemplateHandler(templateStorage, triangleStorage, userStorage)
+    val deleteTriangleHandler = DeleteTriangleHandler(triangleStorage)
+    val getListByColorHandler = GetListByColorHandler(templateStorage, triangleStorage)
+    val getListByAreaHandler = GetListByAreaHandler(templateStorage, triangleStorage)
+    val getStatisticHandler = GetStatisticHandler(templateStorage, triangleStorage)
+    val allTemplatesHandler = AllTemplateHandler(templateStorage)
+    val addTemplateHandler = AddTemplateHandler(templateStorage)
+    val getTemplateInfoHandler = GetInfoTemplateHandler(templateStorage)
+    val deleteTemplateHandler = DeleteTemplateHandler(templateStorage, triangleStorage)
+    val editTemplateHandler = EditTemplateHandler(templateStorage)
     val createTriangleByTemplateHandler = CreateTriangleByTemplateHandler(templateStorage, triangleStorage, userStorage)
-    val allUsersHandler = AllUserHandler(templateStorage, triangleStorage, userStorage)
-    val addUserHandler = AddUserHanler(templateStorage, triangleStorage, userStorage)
-    val deleteUserHandler = DeleteUserHangler(templateStorage, triangleStorage, userStorage)
+    val allUsersHandler = AllUserHandler(userStorage)
+    val addUserHandler = AddUserHandler(userStorage)
+    val deleteUserHandler = DeleteUserHandler(templateStorage, triangleStorage, userStorage)
     return routes(
         "triangles" bind Method.GET to allTrianglesHandler,
         "triangles" bind Method.POST to addTriangleHandler,
-        "triangles/{triangle-id}" bind Method.GET to getTriangleInfoHandler,
-        "triangles/{triangle-id}" bind Method.DELETE to deleteTriangleHandler,
         "triangles/by-border-color" bind Method.GET to getListByColorHandler,
         "triangles/by-area" bind Method.GET to getListByAreaHandler,
         "triangles/statistics" bind Method.GET to getStatisticHandler,
+        "triangles/{triangle-id}" bind Method.GET to getTriangleInfoHandler,
+        "triangles/{triangle-id}" bind Method.DELETE to deleteTriangleHandler,
         "templates" bind Method.GET to allTemplatesHandler,
         "templates" bind Method.POST to addTemplateHandler,
         "templates/{template-id}" bind Method.GET to getTemplateInfoHandler,
@@ -165,9 +177,9 @@ fun createRoutes(
         "templates/{template-id}" bind Method.PUT to editTemplateHandler,
         "templates/{template-id}/triangle" bind Method.POST to createTriangleByTemplateHandler,
         "users" bind Method.GET to allUsersHandler,
-        "users/{user-id}" bind Method.POST to addUserHandler,
+        "users/" bind Method.POST to addUserHandler,
         "users/{{user-id}}" bind Method.DELETE to deleteUserHandler,
-        )
+    )
 }
 
 fun saveUsers(
@@ -178,7 +190,7 @@ fun saveUsers(
         writeRow(
             listOf(
                 "Id",
-                "Name",
+                "Login",
                 "RegistrationDateTime",
                 "Email",
             ),
@@ -186,7 +198,7 @@ fun saveUsers(
         for (user in users.getList()) {
             writeRow(
                 user.id,
-                user.name,
+                user.login,
                 user.registrationDateTime,
                 user.email,
             )
@@ -202,29 +214,23 @@ fun saveTriangles(
         writeRow(
             listOf(
                 "Id",
-                "Title",
-                "Type",
-                "StartDateTime",
-                "Condition",
-                "Capacity",
-                "Price",
-                "Duration",
-                "Specialist",
-                "Launderette",
+                "Template",
+                "RegistrationDateTime",
+                "BorderColor",
+                "FillColor",
+                "Description",
+                "Owner",
             ),
         )
         for (triangle in triangles.getList()) {
             writeRow(
-                machine.id,
-                machine.title,
-                machine.type.type,
-                machine.startDateTime,
-                machine.condition,
-                machine.capacity,
-                machine.price,
-                machine.duration,
-                machine.specialistId,
-                machine.launderette,
+                triangle.id.toString(),
+                triangle.template.toString(),
+                triangle.registrationDateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                triangle.borderColor.color,
+                triangle.fillColor.color,
+                triangle.description,
+                triangle.owner.toString(),
             )
         }
     }
@@ -232,23 +238,25 @@ fun saveTriangles(
 
 fun saveTemplates(
     filePath: String,
-    templates: templateStorage,
+    templates: TemplateStorage,
 ) {
     csvWriter().open(filePath) {
         writeRow(
             listOf(
                 "Id",
-                "Address",
-                "PhoneNumber",
-                "WorkingHours",
+                "SideA",
+                "SideB",
+                "SideC",
+                "Type",
             ),
         )
-        for (launderette in launderettes.getList()) {
+        for (template in templates.getList()) {
             writeRow(
-                launderette.id,
-                launderette.address,
-                launderette.phoneNumber,
-                launderette.workingHours,
+                template.id.toString(),
+                template.sideA,
+                template.sideB,
+                template.sideC,
+                template.type.type,
             )
         }
     }
@@ -258,14 +266,15 @@ fun main(args: Array<String>) {
     try {
         val command = argumentsParser(args)
         val userList = readUsers(command.usersFilePath ?: "")
-        val templateList = readFile(command.templatesFilePath ?: "")
-        val triangleList = readLaunderettes(command.trianglesFilePath ?: "")
+        val triangleList = readFile(command.trianglesFilePath ?: "")
+        val templateList = readTemplates(command.templatesFilePath ?: "")
 
         val triangleStorage = TriangleStorage(triangleList.toMutableList())
         val userStorage = UserStorage(userList.toMutableList())
         val templateStorage = TemplateStorage(templateList.toMutableList())
 
         val apiRoutes = createRoutes(templateStorage, triangleStorage, userStorage)
+
         val app: HttpHandler =
             routes(
                 "ping" bind Method.GET to {

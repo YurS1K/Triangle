@@ -20,5 +20,5 @@ class UserStorage(
 
     fun sortedWith(comparator: Comparator<in User>): List<User> = userList.sortedWith(comparator)
 
-    fun getByEmail(email: String): User? = userList.find { it.email == email }
+    fun getByLogin(login: String): User? = userList.find { it.login == login }
 }

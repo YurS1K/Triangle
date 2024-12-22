@@ -2,7 +2,6 @@ package ru.yarsu.utilities
 
 import org.http4k.core.Parameters
 import org.http4k.core.findSingle
-import ru.yarsu.models.Machine
 
 private fun validatePagination(queryParams: Parameters) {
     val perPageValues = listOf(5, 10, 20, 50)
@@ -39,10 +38,10 @@ private fun validatePagination(queryParams: Parameters) {
     }
 }
 
-fun paginateList(
+fun <T> paginateList(
     queryParams: Parameters,
-    list: List<Machine>,
-): List<Machine> {
+    list: List<T>,
+): List<T> {
     validatePagination(queryParams)
     val page = (queryParams.findSingle("page") ?: "1").toInt()
     val recordsPerPage = (queryParams.findSingle("records-per-page") ?: "10").toInt()

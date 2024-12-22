@@ -4,7 +4,7 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 data class Triangle(
-    val id : UUID,
+    val id: UUID,
     val template: UUID,
     val registrationDateTime: LocalDateTime,
     val borderColor: Color,

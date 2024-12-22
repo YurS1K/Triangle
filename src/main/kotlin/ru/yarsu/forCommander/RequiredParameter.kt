@@ -5,10 +5,10 @@ import com.beust.jcommander.Parameters
 
 @Parameters(separators = " ")
 open class RequiredParameter {
-    @Parameter(names = ["--machines-file"], required = true)
+    @Parameter(names = ["--templates-file"], required = true)
     var templatesFilePath: String? = null
 
-    @Parameter(names = ["--launderettes-file"], required = true)
+    @Parameter(names = ["--triangles-file"], required = true)
     var trianglesFilePath: String? = null
 
     @Parameter(names = ["--users-file"], required = true)

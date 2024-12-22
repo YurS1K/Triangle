@@ -2,7 +2,6 @@ package ru.yarsu.handlers
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.http4k.core.Body
-import org.http4k.core.ContentType
 import org.http4k.core.HttpHandler
 import org.http4k.core.Request
 import org.http4k.core.Response
@@ -10,7 +9,6 @@ import org.http4k.core.Status
 import org.http4k.lens.FormField
 import org.http4k.lens.Validator
 import org.http4k.lens.WebForm
-import org.http4k.lens.contentType
 import org.http4k.lens.string
 import org.http4k.lens.webForm
 import ru.yarsu.models.User

@@ -19,6 +19,7 @@ import org.http4k.server.asServer
 import ru.yarsu.forCommander.RequiredParameter
 import ru.yarsu.handlers.AddTemplateHandler
 import ru.yarsu.handlers.AddTriangleHandler
+import ru.yarsu.handlers.AddUserHandler
 import ru.yarsu.handlers.AllTemplateHandler
 import ru.yarsu.handlers.AllTriangleHandler
 import ru.yarsu.handlers.AllUserHandler
@@ -32,7 +33,6 @@ import ru.yarsu.handlers.GetListByAreaHandler
 import ru.yarsu.handlers.GetListByColorHandler
 import ru.yarsu.handlers.GetStatisticHandler
 import ru.yarsu.handlers.GetTriangleInfoHandler
-import ru.yarsu.handlers.AddUserHandler
 import ru.yarsu.models.Color
 import ru.yarsu.models.Template
 import ru.yarsu.models.Triangle
@@ -282,12 +282,14 @@ fun main(args: Array<String>) {
         val apiRoutes = createRoutes(templateStorage, triangleStorage, userStorage)
 
         val app: HttpHandler =
-            jsonContentTypeFilter.then(routes(
-                "ping" bind Method.GET to {
-                    Response(Status.OK).contentType(ContentType.TEXT_HTML).body("Приложение запущено")
-                },
-                "v2" bind apiRoutes,
-            ))
+            jsonContentTypeFilter.then(
+                routes(
+                    "ping" bind Method.GET to {
+                        Response(Status.OK).contentType(ContentType.TEXT_HTML).body("Приложение запущено")
+                    },
+                    "v2" bind apiRoutes,
+                ),
+            )
         app.asServer(Netty(command.port)).start()
         Runtime
             .getRuntime()

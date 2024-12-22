@@ -2,12 +2,10 @@ package ru.yarsu.handlers
 
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import org.http4k.core.ContentType
 import org.http4k.core.HttpHandler
 import org.http4k.core.Request
 import org.http4k.core.Response
 import org.http4k.core.Status
-import org.http4k.lens.contentType
 import org.http4k.routing.path
 import ru.yarsu.models.Template
 import ru.yarsu.storages.TemplateStorage
